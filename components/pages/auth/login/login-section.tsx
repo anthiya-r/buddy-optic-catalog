@@ -1,0 +1,75 @@
+'use client';
+
+import PasswordField from '@/components/form/password-field';
+import TextField from '@/components/form/text-field';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { FieldGroup } from '@/components/ui/field';
+import { authSchema as formSchema } from '@/schema/auth-schema';
+import { signInUsernameAction } from '@/services/auth-actions';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
+
+const LoginSection = () => {
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  });
+
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      await signInUsernameAction(data);
+      toast.success('เข้าสู่ระบบสำเร็จ');
+      router.push('/admin/dashboard');
+    } catch {
+      toast.error('Username หรือ Password ไม่ถูกต้อง');
+    }
+  }
+
+  return (
+    <Card className="w-full max-w-lg rounded-2xl shadow-lg mx-auto">
+      <CardHeader className="pb-2 text-center">
+        <h1 className="text-3xl font-bold tracking-tight">Buddy Optical</h1>
+      </CardHeader>
+
+      <CardContent className="space-y-6 w-full">
+        <h2 className="text-center text-2xl font-semibold">LOG IN</h2>
+
+        <form id="login-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FieldGroup>
+            <TextField
+              form={form}
+              name="username"
+              label="Username"
+              placeholder="Username"
+              icon={<User className="h-4 w-4" />}
+            />
+
+            <PasswordField form={form} name="password" label="Password" placeholder="Password" />
+          </FieldGroup>
+        </form>
+
+        <Button
+          type="submit"
+          form="login-form"
+          size="lg"
+          className="w-full rounded-full text-base font-semibold"
+        >
+          LOG IN
+        </Button>
+      </CardContent>
+
+      <CardFooter />
+    </Card>
+  );
+};
+
+export default LoginSection;
