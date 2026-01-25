@@ -1,15 +1,15 @@
-import "dotenv/config";
-import { auth } from "../lib/auth";
+import 'dotenv/config';
+import { auth } from '../lib/auth';
 
 const ADMIN_USER = {
-  name: "Admin",
-  email: "admin@buddy-optic.com",
-  username: "admin",
-  password: "Admin@1234",
+  name: 'Admin',
+  email: 'admin@buddy-optic.com',
+  username: 'admin',
+  password: 'Admin@1234',
 };
 
 async function seed() {
-  console.log("Seeding admin user...");
+  console.log('Seeding admin user...');
 
   try {
     // Check if user already exists
@@ -28,24 +28,21 @@ async function seed() {
     });
 
     if (result.user) {
-      console.log("Admin user created successfully!");
-      console.log("Email:", ADMIN_USER.email);
-      console.log("Username:", ADMIN_USER.username);
-      console.log("Password:", ADMIN_USER.password);
+      console.log('Admin user created successfully!');
+      console.log('Email:', ADMIN_USER.email);
+      console.log('Username:', ADMIN_USER.username);
+      console.log('Password:', ADMIN_USER.password);
     }
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes("User already exists")
-    ) {
-      console.log("Admin user already exists, skipping...");
+    if (error instanceof Error && error.message.includes('User already exists')) {
+      console.log('Admin user already exists, skipping...');
     } else {
-      console.error("Error seeding admin user:", error);
+      console.error('Error seeding admin user:', error);
       process.exit(1);
     }
   }
 
-  console.log("Seed completed!");
+  console.log('Seed completed!');
   process.exit(0);
 }
 

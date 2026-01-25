@@ -10,3 +10,7 @@ export async function signInUsernameAction(data: { username: string; password: s
     },
   });
 }
+
+export async function signOutAction() {
+  return await auth.api.signOut();
+}

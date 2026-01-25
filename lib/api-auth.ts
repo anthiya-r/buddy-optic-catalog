@@ -25,7 +25,7 @@ export function withAuth<T>(
   return async (request: NextRequest, context: T) => {
     const authResult = await requireAuth(request);
 
-    if (!authResult.authenticated) {
+    if (!authResult.authenticated || !authResult.user) {
       return authResult.error;
     }
 

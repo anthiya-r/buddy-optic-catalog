@@ -3,10 +3,10 @@
 import PasswordField from '@/components/form/password-field';
 import TextField from '@/components/form/text-field';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { FieldGroup } from '@/components/ui/field';
+import { authClient } from '@/lib/auth-client';
 import { authSchema as formSchema } from '@/schema/auth-schema';
-import { signInUsernameAction } from '@/services/auth-actions';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -25,13 +25,18 @@ const LoginSection = () => {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    try {
-      await signInUsernameAction(data);
-      toast.success('เข้าสู่ระบบสำเร็จ');
-      router.push('/admin/dashboard');
-    } catch {
+    const { error } = await authClient.signIn.username({
+      username: data.username,
+      password: data.password,
+    });
+
+    if (error) {
       toast.error('Username หรือ Password ไม่ถูกต้อง');
+      return;
     }
+
+    toast.success('เข้าสู่ระบบสำเร็จ');
+    router.push('/admin/dashboard');
   }
 
   return (
@@ -67,7 +72,6 @@ const LoginSection = () => {
         </Button>
       </CardContent>
 
-      <CardFooter />
     </Card>
   );
 };

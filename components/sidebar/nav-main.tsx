@@ -1,8 +1,8 @@
 'use client';
 
+import { FolderTree, LayoutDashboard, Package, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Package, FolderTree, type LucideIcon } from 'lucide-react';
 
 import {
   SidebarGroup,
@@ -20,6 +20,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  {
+    title: 'Dashboard',
+    url: '/admin/dashboard',
+    icon: LayoutDashboard,
+  },
   {
     title: 'สินค้า',
     url: '/admin/products',

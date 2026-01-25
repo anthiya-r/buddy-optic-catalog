@@ -1,0 +1,1144 @@
+openapi: 3.0.3
+info:
+  title: Buddy Optic Catalog API
+  description: API for managing optical products catalog with categories, products, and admin functionality
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: /api
+    description: API base path
+
+tags:
+  - name: Products
+    description: Public product endpoints
+  - name: Categories
+    description: Public category endpoints
+  - name: Admin Products
+    description: Admin product management endpoints
+  - name: Admin Categories
+    description: Admin category management endpoints
+  - name: Admin Dashboard
+    description: Admin dashboard statistics
+  - name: Admin Upload
+    description: Admin file upload endpoints
+  - name: Auth
+    description: Authentication endpoints
+
+paths:
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      description: Retrieve a paginated list of active products with optional filters
+      operationId: getProducts
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: string
+            default: "1"
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: string
+            default: "20"
+        - name: categoryId
+          in: query
+          description: Filter by category UUID
+          schema:
+            type: string
+            format: uuid
+        - name: search
+          in: query
+          description: Search by product name (case-insensitive)
+          schema:
+            type: string
+        - name: color
+          in: query
+          description: Filter by color (case-insensitive)
+          schema:
+            type: string
+        - name: sortBy
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+            default: createdAt
+        - name: sortOrder
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      description: Retrieve a single active product by its ID
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /categories:
+    get:
+      tags:
+        - Categories
+      summary: Get all categories
+      description: Retrieve all active categories ordered by sortOrder
+      operationId: getCategories
+      responses:
+        "200":
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryListResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/products:
+    get:
+      tags:
+        - Admin Products
+      summary: Get all products (admin)
+      description: Retrieve all products including hidden and optionally deleted ones
+      operationId: getAdminProducts
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: string
+            default: "1"
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: string
+            default: "20"
+        - name: categoryId
+          in: query
+          description: Filter by category UUID
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          description: Filter by status
+          schema:
+            type: string
+            enum: [active, hidden]
+        - name: includeDeleted
+          in: query
+          description: Include soft-deleted products
+          schema:
+            type: string
+            default: "false"
+        - name: search
+          in: query
+          description: Search by product name (case-insensitive)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Admin Products
+      summary: Create a new product
+      description: Create a new product in the catalog
+      operationId: createProduct
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+      responses:
+        "200":
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/products/{id}:
+    get:
+      tags:
+        - Admin Products
+      summary: Get product by ID (admin)
+      description: Retrieve a single product including deleted ones
+      operationId: getAdminProductById
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      tags:
+        - Admin Products
+      summary: Update a product
+      description: Update an existing product
+      operationId: updateProduct
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product UUID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductRequest"
+      responses:
+        "200":
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product or category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - Admin Products
+      summary: Delete a product
+      description: Soft delete a product by setting deletedAt timestamp
+      operationId: deleteProduct
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Product already deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/products/{id}/status:
+    patch:
+      tags:
+        - Admin Products
+      summary: Toggle product status
+      description: Toggle product status between active and hidden
+      operationId: toggleProductStatus
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Product UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Product status toggled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Cannot update status of deleted product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/categories:
+    get:
+      tags:
+        - Admin Categories
+      summary: Get all categories with product counts
+      description: Retrieve all categories with product count for each
+      operationId: getAdminCategories
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCategoryListResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/categories/{id}:
+    put:
+      tags:
+        - Admin Categories
+      summary: Update a category
+      description: Update an existing category
+      operationId: updateCategory
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category UUID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCategoryRequest"
+      responses:
+        "200":
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/categories/reorder:
+    put:
+      tags:
+        - Admin Categories
+      summary: Reorder categories
+      description: Update sort order for multiple categories
+      operationId: reorderCategories
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReorderCategoriesRequest"
+      responses:
+        "200":
+          description: Categories reordered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminCategoryListResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/dashboard/stats:
+    get:
+      tags:
+        - Admin Dashboard
+      summary: Get dashboard statistics
+      description: Retrieve dashboard statistics including product and category counts
+      operationId: getDashboardStats
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: Dashboard stats retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStatsResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/upload/image:
+    post:
+      tags:
+        - Admin Upload
+      summary: Upload an image
+      description: Upload an image file (currently disabled)
+      operationId: uploadImage
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Image file to upload
+              required:
+                - file
+      responses:
+        "200":
+          description: Image uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadImageResponse"
+        "400":
+          description: Invalid file type or size
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/{path}:
+    get:
+      tags:
+        - Auth
+      summary: Authentication endpoints (GET)
+      description: Catch-all authentication handler for better-auth library
+      operationId: authGet
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: Auth path (e.g., session, callback)
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Auth response
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      tags:
+        - Auth
+      summary: Authentication endpoints (POST)
+      description: Catch-all authentication handler for better-auth library
+      operationId: authPost
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: Auth path (e.g., sign-in, sign-up, sign-out)
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Auth response
+          content:
+            application/json:
+              schema:
+                type: object
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Session-based authentication using better-auth
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Product unique identifier
+        name:
+          type: string
+          description: Product name
+        color:
+          type: string
+          description: Product color
+        images:
+          type: string
+          description: Product images (comma-separated URLs or JSON)
+        status:
+          type: string
+          enum: [active, hidden]
+          description: Product visibility status
+        categoryId:
+          type: string
+          format: uuid
+          description: Category unique identifier
+        category:
+          $ref: "#/components/schemas/CategoryBasic"
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Soft delete timestamp
+      required:
+        - id
+        - name
+        - color
+        - images
+        - status
+        - categoryId
+        - createdAt
+        - updatedAt
+
+    CategoryBasic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Category unique identifier
+        name:
+          type: string
+          description: Category name
+        slug:
+          type: string
+          description: Category URL slug
+      required:
+        - id
+        - name
+        - slug
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Category unique identifier
+        name:
+          type: string
+          description: Category name
+        slug:
+          type: string
+          description: Category URL slug
+        sortOrder:
+          type: integer
+          description: Display order
+      required:
+        - id
+        - name
+        - slug
+        - sortOrder
+
+    AdminCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Category unique identifier
+        name:
+          type: string
+          description: Category name
+        slug:
+          type: string
+          description: Category URL slug
+        sortOrder:
+          type: integer
+          description: Display order
+        isActive:
+          type: boolean
+          description: Category active status
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        productCount:
+          type: integer
+          description: Number of products in this category
+      required:
+        - id
+        - name
+        - slug
+        - sortOrder
+        - isActive
+        - createdAt
+        - updatedAt
+        - productCount
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number
+        limit:
+          type: integer
+          description: Items per page
+        totalCount:
+          type: integer
+          description: Total number of items
+        totalPages:
+          type: integer
+          description: Total number of pages
+      required:
+        - page
+        - limit
+        - totalCount
+        - totalPages
+
+    CreateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Product name
+        color:
+          type: string
+          minLength: 1
+          description: Product color
+        images:
+          type: string
+          minLength: 1
+          description: Product images
+        categoryId:
+          type: string
+          format: uuid
+          description: Category UUID
+        status:
+          type: string
+          enum: [active, hidden]
+          default: active
+          description: Product visibility status
+      required:
+        - name
+        - color
+        - images
+        - categoryId
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Product name
+        color:
+          type: string
+          minLength: 1
+          description: Product color
+        images:
+          type: string
+          description: Product images
+        categoryId:
+          type: string
+          format: uuid
+          description: Category UUID
+        status:
+          type: string
+          enum: [active, hidden]
+          description: Product visibility status
+
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Category name
+        isActive:
+          type: boolean
+          description: Category active status
+
+    ReorderCategoriesRequest:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Category UUID
+              sortOrder:
+                type: integer
+                minimum: 0
+                description: New sort order
+            required:
+              - id
+              - sortOrder
+      required:
+        - orders
+
+    ProductListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Products retrieved successfully
+        data:
+          type: object
+          properties:
+            products:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product"
+            pagination:
+              $ref: "#/components/schemas/Pagination"
+          required:
+            - products
+            - pagination
+      required:
+        - success
+        - message
+        - data
+
+    ProductResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Product retrieved successfully
+        data:
+          $ref: "#/components/schemas/Product"
+      required:
+        - success
+        - message
+        - data
+
+    CategoryListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Categories retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+      required:
+        - success
+        - message
+        - data
+
+    CategoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Category updated successfully
+        data:
+          $ref: "#/components/schemas/AdminCategory"
+      required:
+        - success
+        - message
+        - data
+
+    AdminCategoryListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Categories retrieved successfully
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminCategory"
+      required:
+        - success
+        - message
+        - data
+
+    DashboardStatsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Dashboard stats retrieved successfully
+        data:
+          type: object
+          properties:
+            products:
+              type: object
+              properties:
+                total:
+                  type: integer
+                  description: Total number of products
+                active:
+                  type: integer
+                  description: Number of active products
+                hidden:
+                  type: integer
+                  description: Number of hidden products
+                deleted:
+                  type: integer
+                  description: Number of deleted products
+              required:
+                - total
+                - active
+                - hidden
+                - deleted
+            categories:
+              type: object
+              properties:
+                total:
+                  type: integer
+                  description: Total number of categories
+                active:
+                  type: integer
+                  description: Number of active categories
+              required:
+                - total
+                - active
+            productsByCategory:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  count:
+                    type: integer
+                required:
+                  - id
+                  - name
+                  - count
+          required:
+            - products
+            - categories
+            - productsByCategory
+      required:
+        - success
+        - message
+        - data
+
+    UploadImageResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Image uploaded successfully
+        data:
+          type: object
+          properties:
+            url:
+              type: string
+              description: URL of the uploaded image
+          required:
+            - url
+      required:
+        - success
+        - message
+        - data
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: An error occurred
+      required:
+        - success
+        - message

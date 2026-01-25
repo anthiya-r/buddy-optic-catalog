@@ -1,6 +1,8 @@
 'use client';
 
 import { KeyRound, LogOut, MoreVertical } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -18,17 +20,20 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
 
 export function NavUser({
   user,
 }: {
   user: {
     name: string;
-    email: string;
-    avatar: string;
+    username: string;
+    avatar?: string;
   };
 }) {
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
   const getInitials = (name: string) => {
     return name
@@ -37,6 +42,12 @@ export function NavUser({
       .join('')
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    toast.success('ออกจากระบบสำเร็จ');
+    router.push('/auth/login');
   };
 
   return (
@@ -57,7 +68,7 @@ export function NavUser({
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  @{user.username}
                 </span>
               </div>
               <MoreVertical className="ml-auto size-4" />
@@ -80,20 +91,22 @@ export function NavUser({
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
+                    @{user.username}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <KeyRound />
-                เปลี่ยนรหัสผ่าน
+              <DropdownMenuItem asChild>
+                <Link href="/admin/change-password">
+                  <KeyRound />
+                  เปลี่ยนรหัสผ่าน
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               ออกจากระบบ
             </DropdownMenuItem>
