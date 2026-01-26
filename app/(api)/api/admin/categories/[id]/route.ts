@@ -52,4 +52,50 @@ async function putHandler(
   }
 }
 
+async function deleteHandler(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
+  userId: string,
+) {
+  try {
+    const { id } = await context.params;
+
+    const existingCategory = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            products: {
+              where: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!existingCategory) {
+      return errorResponse('Category not found', 404);
+    }
+
+    // Check if category has products
+    if (existingCategory._count.products > 0) {
+      return errorResponse(
+        `ไม่สามารถลบหมวดหมู่ได้ เนื่องจากมีสินค้าอยู่ ${existingCategory._count.products} รายการ`,
+        400
+      );
+    }
+
+    await prisma.category.delete({
+      where: { id },
+    });
+
+    return successResponse(null, 'Category deleted successfully');
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
 export const PUT = withAuth(putHandler);
+export const DELETE = withAuth(deleteHandler);

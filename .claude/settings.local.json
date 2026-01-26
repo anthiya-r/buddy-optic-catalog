@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run db:seed:*)",
       "Bash(move \"C:\\\\Users\\\\User\\\\Desktop\\\\Work\\\\Freelance\\\\Prod\\\\buddy-optic-catalog\\\\openapi.yaml\" \"C:\\\\Users\\\\User\\\\Desktop\\\\Work\\\\Freelance\\\\Prod\\\\buddy-optic-catalog\\\\public\\\\openapi.yaml\")",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest add:*)"
     ]
   }
 }
