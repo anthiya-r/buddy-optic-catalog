@@ -121,9 +121,9 @@ export default function CatalogPage() {
       <section id="catalog" className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="mb-8">
-            {/* Search Bar */}
-            <div className="flex flex-col gap-4 mb-2 md:mb-4">
-              <div className="relative">
+            {/* Search Bar + Filters (same row) */}
+            <div className="flex flex-col md:flex-row md:items-center gap-4 mb-2 md:mb-4">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   type="text"
@@ -132,6 +132,10 @@ export default function CatalogPage() {
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-10 bg-white border-amber-200 focus:ring-orange-400"
                 />
+              </div>
+
+              <div className="flex items-center h-9 flex-shrink-0">
+                <CatalogFilters onFiltersChange={setFilters} />
               </div>
             </div>
 
@@ -158,8 +162,7 @@ export default function CatalogPage() {
               ))}
             </div>
 
-            {/* Frame Filters */}
-            <CatalogFilters onFiltersChange={setFilters} />
+            {/* Frame Filters placed with search above */}
           </div>
 
           {/* Products Grid */}

@@ -2,6 +2,8 @@
 
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from './ui/sheet';
 
 export interface CatalogFiltersState {
   frameStyles: string[];
@@ -68,162 +70,180 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
   };
 
   return (
-    <div className="w-full">
-      {/* Mobile/Tablet Accordion */}
+    <div className="w-full md:w-auto">
+      {/* Mobile/Tablet Sheet (dropdown-like) */}
       <div className="md:hidden mb-6">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between gap-2 px-4 py-3 bg-[#ffe8bf] text-[#1a1a1a] rounded-lg font-medium border border-[#cc9b71]"
-        >
-          <span>ตัวกรองหมวดหมู่ ({selectedFilters.length})</span>
-          <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-        </button>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <button className="w-full h-9 flex items-center justify-between gap-2 px-3 bg-white text-[#1a1a1a] rounded-md font-medium border border-amber-200">
+              <span>ตัวกรกรองหมวดหมู่ ({selectedFilters.length})</span>
+              <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+          </SheetTrigger>
 
-        {isOpen && (
-          <div className="mt-3 space-y-4 p-4 bg-white border border-amber-100 rounded-lg">
-            {/* Frame Styles */}
-            <div>
-              <h4 className="font-semibold text-sm text-[#1a1a1a] mb-2">ประเภทของกรอบ</h4>
-              <div className="space-y-2">
-                {frameCategories.frame.map((filter) => (
-                  <label
-                    key={filter.id}
-                    className="flex items-center gap-2 cursor-pointer hover:bg-amber-50 p-2 rounded"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedFilters.includes(filter.id)}
-                      onChange={() => handleFilterToggle(filter.id)}
-                      className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
-                    />
-                    <span className="text-sm text-slate-700">{filter.label}</span>
-                  </label>
-                ))}
+          <SheetContent side="bottom" className="p-0">
+            <SheetHeader className="border-b">
+              <SheetTitle className="px-4 py-3 text-sm">ตัวกรอง</SheetTitle>
+            </SheetHeader>
+
+            <div className="space-y-4 p-4 bg-white">
+              {/* Frame Styles */}
+              <div>
+                <h4 className="font-semibold text-sm text-[#1a1a1a] mb-2">ประเภทของกรอบ</h4>
+                <div className="space-y-2">
+                  {frameCategories.frame.map((filter) => (
+                    <label
+                      key={filter.id}
+                      className="flex items-center gap-2 cursor-pointer hover:bg-amber-50 p-2 rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.includes(filter.id)}
+                        onChange={() => handleFilterToggle(filter.id)}
+                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
+                      />
+                      <span className="text-sm text-slate-700">{filter.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sizes */}
+              <div className="border-t pt-3">
+                <h4 className="font-semibold text-sm text-[#1a1a1a] mb-2">ขนาดกรอบ</h4>
+                <div className="space-y-2">
+                  {frameCategories.size.map((filter) => (
+                    <label
+                      key={filter.id}
+                      className="flex items-center gap-2 cursor-pointer hover:bg-amber-50 p-2 rounded"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.includes(filter.id)}
+                        onChange={() => handleFilterToggle(filter.id)}
+                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
+                      />
+                      <span className="text-sm text-slate-700">{filter.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Recommendation */}
+              <div className="border-t pt-3">
+                <label className="flex items-center gap-2 cursor-pointer hover:bg-amber-50 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={selectedFilters.includes('face-shape')}
+                    onChange={() => handleFilterToggle('face-shape')}
+                    className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
+                  />
+                  <span className="text-sm text-slate-700">
+                    {FRAME_FILTERS.find((f) => f.id === 'face-shape')?.label}
+                  </span>
+                </label>
               </div>
             </div>
-
-            {/* Sizes */}
-            <div className="border-t pt-3">
-              <h4 className="font-semibold text-sm text-[#1a1a1a] mb-2">ขนาดกรอบ</h4>
-              <div className="space-y-2">
-                {frameCategories.size.map((filter) => (
-                  <label
-                    key={filter.id}
-                    className="flex items-center gap-2 cursor-pointer hover:bg-amber-50 p-2 rounded"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedFilters.includes(filter.id)}
-                      onChange={() => handleFilterToggle(filter.id)}
-                      className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
-                    />
-                    <span className="text-sm text-slate-700">{filter.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Recommendation */}
-            <div className="border-t pt-3">
-              <label className="flex items-center gap-2 cursor-pointer hover:bg-amber-50 p-2 rounded">
-                <input
-                  type="checkbox"
-                  checked={selectedFilters.includes('face-shape')}
-                  onChange={() => handleFilterToggle('face-shape')}
-                  className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
-                />
-                <span className="text-sm font-medium text-[#cc9b71]">
-                  {FRAME_FILTERS.find((f) => f.id === 'face-shape')?.label}
-                </span>
-              </label>
-            </div>
-          </div>
-        )}
+          </SheetContent>
+        </Sheet>
       </div>
 
-      {/* Desktop Grid */}
-      <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8 p-6 bg-white border border-amber-100 rounded-lg">
-        {/* Column 1: Frame Styles */}
-        <div>
-          <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
-            ประเภทของกรอบ
-          </h3>
-          <div className="space-y-2">
-            {frameCategories.frame.map((filter) => (
-              <label key={filter.id} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={selectedFilters.includes(filter.id)}
-                  onChange={() => handleFilterToggle(filter.id)}
-                  className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
-                />
-                <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
-                  {filter.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+      {/* Desktop: DropdownMenu */}
+      <div className="hidden md:block md:mb-0">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="h-9 flex items-center gap-2 px-4 py-0 bg-white border border-amber-200 rounded-md shadow-sm hover:shadow md:text-sm">
+              <span className="font-medium">ตัวกรองหมวดหมู่</span>
+              <span className="text-amber-600">({selectedFilters.length})</span>
+              <ChevronDown className="h-4 w-4 text-slate-600" />
+            </button>
+          </DropdownMenuTrigger>
 
-        {/* Column 2: Sizes */}
-        <div>
-          <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
-            ขนาดกรอบ
-          </h3>
-          <div className="space-y-2">
-            {frameCategories.size.map((filter) => (
-              <label key={filter.id} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={selectedFilters.includes(filter.id)}
-                  onChange={() => handleFilterToggle(filter.id)}
-                  className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
-                />
-                <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
-                  {filter.label}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+          <DropdownMenuContent className="p-4 w-[640px]">
+            <div className="grid grid-cols-3 gap-6">
+              {/* Column 1: Frame Styles */}
+              <div>
+                <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
+                  ประเภทของกรอบ
+                </h3>
+                <div className="space-y-2">
+                  {frameCategories.frame.map((filter) => (
+                    <label key={filter.id} className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.includes(filter.id)}
+                        onChange={() => handleFilterToggle(filter.id)}
+                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
+                      />
+                      <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
+                        {filter.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-        {/* Column 3: Recommendation & Clear */}
-        <div>
-          <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
-            คำแนะนำ
-          </h3>
-          <div className="space-y-3">
-            <label className="flex items-center gap-3 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={selectedFilters.includes('face-shape')}
-                onChange={() => handleFilterToggle('face-shape')}
-                className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
-              />
-              <span className="text-sm font-medium text-[#cc9b71] group-hover:text-[#1a1a1a] transition-colors">
-                เหมาะกับรูปหน้า
-              </span>
-            </label>
+              {/* Column 2: Sizes */}
+              <div>
+                <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
+                  ขนาดกรอบ
+                </h3>
+                <div className="space-y-2">
+                  {frameCategories.size.map((filter) => (
+                    <label key={filter.id} className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.includes(filter.id)}
+                        onChange={() => handleFilterToggle(filter.id)}
+                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
+                      />
+                      <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
+                        {filter.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
 
-            {/* Clear Filters */}
-            {selectedFilters.length > 0 && (
-              <button
-                onClick={() => {
-                  setSelectedFilters([]);
-                  onFiltersChange({
-                    frameStyles: [],
-                    materials: [],
-                    sizes: [],
-                    faceShape: false,
-                  });
-                }}
-                className="mt-4 pt-3 border-t border-amber-100 text-sm text-[#cc9b71] hover:text-[#1a1a1a] font-medium transition-colors"
-              >
-                ล้างตัวกรอง
-              </button>
-            )}
-          </div>
-        </div>
+              {/* Column 3: Recommendation & Clear */}
+              <div>
+                <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
+                  คำแนะนำ
+                </h3>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={selectedFilters.includes('face-shape')}
+                      onChange={() => handleFilterToggle('face-shape')}
+                      className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
+                    />
+                    <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
+                      เหมาะกับรูปหน้า
+                    </span>
+                  </label>
+
+                  {selectedFilters.length > 0 && (
+                    <button
+                      onClick={() => {
+                        setSelectedFilters([]);
+                        onFiltersChange({
+                          frameStyles: [],
+                          materials: [],
+                          sizes: [],
+                          faceShape: false,
+                        });
+                      }}
+                      className="mt-4 pt-3 border-t border-amber-100 text-sm text-[#cc9b71] hover:text-[#1a1a1a] font-medium transition-colors"
+                    >
+                      ล้างตัวกรอง
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
