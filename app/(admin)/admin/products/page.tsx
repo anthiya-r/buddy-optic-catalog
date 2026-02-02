@@ -154,14 +154,15 @@ export default function ProductsPage() {
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">จัดการสินค้า</h1>
-          <p className="text-muted-foreground">เพิ่ม แก้ไข ลบ และจัดการสินค้าทั้งหมด</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">จัดการสินค้า</h1>
+          <p className="text-slate-500">เพิ่ม แก้ไข ลบ และจัดการสินค้าทั้งหมด</p>
         </div>
         <Button
           onClick={() => {
             setSelectedProduct(null);
             setFormDialogOpen(true);
           }}
+          className="rounded-lg"
         >
           <Plus className="mr-2 h-4 w-4" />
           เพิ่มสินค้า
@@ -169,14 +170,14 @@ export default function ProductsPage() {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="border-amber-100 bg-white shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg">ค้นหาและกรอง</CardTitle>
+          <CardTitle className="text-lg text-slate-900">ค้นหาและกรอง</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="ค้นหาชื่อสินค้า..."
                 value={search}
@@ -220,24 +221,24 @@ export default function ProductsPage() {
       </Card>
 
       {/* Products Table */}
-      <Card>
+      <Card className="border-amber-100 bg-white shadow-sm">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-20">รูปภาพ</TableHead>
-                  <TableHead>ชื่อสินค้า</TableHead>
-                  <TableHead className="hidden sm:table-cell">สี</TableHead>
-                  <TableHead className="hidden md:table-cell">หมวดหมู่</TableHead>
-                  <TableHead>สถานะ</TableHead>
-                  <TableHead className="text-right">จัดการ</TableHead>
+              <TableHeader className="bg-amber-50">
+                <TableRow className="border-amber-100 hover:bg-amber-50">
+                  <TableHead className="w-20 text-slate-700">รูปภาพ</TableHead>
+                  <TableHead className="text-slate-700">ชื่อสินค้า</TableHead>
+                  <TableHead className="hidden sm:table-cell text-slate-700">สี</TableHead>
+                  <TableHead className="hidden md:table-cell text-slate-700">หมวดหมู่</TableHead>
+                  <TableHead className="text-slate-700">สถานะ</TableHead>
+                  <TableHead className="text-right text-slate-700">จัดการ</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}>
+                    <TableRow key={i} className="border-amber-100 hover:bg-amber-50/50">
                       <TableCell>
                         <Skeleton className="h-12 w-12 rounded" />
                       </TableCell>
@@ -289,12 +290,17 @@ export default function ProductsPage() {
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">{product.color}</TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <Badge variant="outline">{product.category.name}</Badge>
+                        <Badge
+                          variant="outline"
+                          className="border-amber-200 bg-amber-50 text-slate-700"
+                        >
+                          {product.category.name}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant={product.status === 'active' ? 'default' : 'secondary'}
-                          className="cursor-pointer"
+                          className={`cursor-pointer ${product.status === 'active' ? 'bg-green-100 text-green-900 hover:bg-green-200' : 'bg-gray-100 text-gray-900'}`}
                           onClick={() => handleToggleStatus(product)}
                         >
                           {product.status === 'active' ? (
@@ -312,11 +318,21 @@ export default function ProductsPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEdit(product)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="hover:bg-amber-100 hover:text-orange-600"
+                            onClick={() => handleEdit(product)}
+                          >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => handleDelete(product)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="hover:bg-red-100"
+                            onClick={() => handleDelete(product)}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>
                         </div>
                       </TableCell>

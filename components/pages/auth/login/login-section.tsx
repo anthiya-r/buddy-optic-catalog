@@ -40,13 +40,13 @@ const LoginSection = () => {
   }
 
   return (
-    <Card className="w-full max-w-lg rounded-2xl shadow-lg mx-auto">
-      <CardHeader className="pb-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Buddy Optical</h1>
+    <Card className="w-full max-w-lg rounded-2xl shadow-lg mx-auto border-amber-200 bg-white">
+      <CardHeader className="pb-2 text-center bg-gradient-to-b from-amber-50 to-transparent">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Buddy Optical</h1>
       </CardHeader>
 
-      <CardContent className="space-y-6 w-full">
-        <h2 className="text-center text-2xl font-semibold">LOG IN</h2>
+      <CardContent className="space-y-6 w-full pt-8">
+        <h2 className="text-center text-2xl font-semibold text-slate-900">LOG IN</h2>
 
         <form id="login-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FieldGroup>
@@ -71,7 +71,6 @@ const LoginSection = () => {
           LOG IN
         </Button>
       </CardContent>
-
     </Card>
   );
 };

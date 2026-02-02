@@ -18,16 +18,7 @@ import {
 import { API_URLS } from '@/constants/url';
 import { api } from '@/lib/request';
 import { CategoryWithCount } from '@/types/category';
-import {
-  Edit,
-  Eye,
-  EyeOff,
-  FolderOpen,
-  GripVertical,
-  Plus,
-  Search,
-  Trash2,
-} from 'lucide-react';
+import { Edit, Eye, EyeOff, FolderOpen, GripVertical, Plus, Search, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -64,7 +55,7 @@ export default function CategoriesPage() {
   useEffect(() => {
     if (search.trim()) {
       const filtered = categories.filter((cat) =>
-        cat.name.toLowerCase().includes(search.toLowerCase())
+        cat.name.toLowerCase().includes(search.toLowerCase()),
       );
       setFilteredCategories(filtered);
     } else {
@@ -86,9 +77,7 @@ export default function CategoriesPage() {
     if (!selectedCategory) return;
 
     setIsDeleting(true);
-    const response = await api.delete(
-      API_URLS.ADMIN.CATEGORIES.DETAIL(selectedCategory.id)
-    );
+    const response = await api.delete(API_URLS.ADMIN.CATEGORIES.DETAIL(selectedCategory.id));
 
     if (response.success) {
       toast.success('ลบหมวดหมู่สำเร็จ');
@@ -161,16 +150,15 @@ export default function CategoriesPage() {
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">จัดการหมวดหมู่</h1>
-          <p className="text-muted-foreground">
-            เพิ่ม แก้ไข ลบ และจัดเรียงหมวดหมู่สินค้า
-          </p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">จัดการหมวดหมู่</h1>
+          <p className="text-slate-500">เพิ่ม แก้ไข ลบ และจัดเรียงหมวดหมู่สินค้า</p>
         </div>
         <Button
           onClick={() => {
             setSelectedCategory(null);
             setFormDialogOpen(true);
           }}
+          className="rounded-lg"
         >
           <Plus className="mr-2 h-4 w-4" />
           เพิ่มหมวดหมู่
@@ -178,42 +166,42 @@ export default function CategoriesPage() {
       </div>
 
       {/* Search */}
-      <Card>
+      <Card className="border-amber-100 bg-white shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg">ค้นหา</CardTitle>
+          <CardTitle className="text-lg text-slate-900">ค้นหา</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               placeholder="ค้นหาหมวดหมู่..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-amber-200 bg-white focus:ring-orange-400"
             />
           </div>
         </CardContent>
       </Card>
 
       {/* Categories Table */}
-      <Card>
+      <Card className="border-amber-100 bg-white shadow-sm">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12"></TableHead>
-                  <TableHead>ชื่อหมวดหมู่</TableHead>
-                  <TableHead className="hidden sm:table-cell">Slug</TableHead>
-                  <TableHead className="text-center">จำนวนสินค้า</TableHead>
-                  <TableHead>สถานะ</TableHead>
-                  <TableHead className="text-right">จัดการ</TableHead>
+              <TableHeader className="bg-amber-50">
+                <TableRow className="border-amber-100 hover:bg-amber-50">
+                  <TableHead className="w-12 text-slate-700"></TableHead>
+                  <TableHead className="text-slate-700">ชื่อหมวดหมู่</TableHead>
+                  <TableHead className="hidden sm:table-cell text-slate-700">Slug</TableHead>
+                  <TableHead className="text-center text-slate-700">จำนวนสินค้า</TableHead>
+                  <TableHead className="text-slate-700">สถานะ</TableHead>
+                  <TableHead className="text-right text-slate-700">จัดการ</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}>
+                    <TableRow key={i} className="border-amber-100 hover:bg-amber-50/50">
                       <TableCell>
                         <Skeleton className="h-4 w-4" />
                       </TableCell>
@@ -237,7 +225,7 @@ export default function CategoriesPage() {
                 ) : filteredCategories.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-32 text-center">
-                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <div className="flex flex-col items-center gap-2 text-slate-500">
                         <FolderOpen className="h-8 w-8" />
                         <p>ไม่พบหมวดหมู่</p>
                       </div>
@@ -258,17 +246,19 @@ export default function CategoriesPage() {
                           <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
                         )}
                       </TableCell>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell className="hidden sm:table-cell text-muted-foreground">
+                      <TableCell className="font-medium text-slate-900">{category.name}</TableCell>
+                      <TableCell className="hidden sm:table-cell text-slate-500">
                         {category.slug}
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge variant="secondary">{category.productCount}</Badge>
+                        <Badge variant="secondary" className="bg-amber-100 text-orange-900">
+                          {category.productCount}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant={category.isActive ? 'default' : 'secondary'}
-                          className="cursor-pointer"
+                          className={`cursor-pointer ${category.isActive ? 'bg-green-100 text-green-900 hover:bg-green-200' : 'bg-gray-100 text-gray-900'}`}
                           onClick={() => handleToggleStatus(category)}
                         >
                           {category.isActive ? (
@@ -289,6 +279,7 @@ export default function CategoriesPage() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            className="hover:bg-amber-100 hover:text-orange-600"
                             onClick={() => handleEdit(category)}
                           >
                             <Edit className="h-4 w-4" />
@@ -296,6 +287,7 @@ export default function CategoriesPage() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            className="hover:bg-red-100"
                             onClick={() => handleDelete(category)}
                             disabled={category.productCount > 0}
                             title={
@@ -304,7 +296,7 @@ export default function CategoriesPage() {
                                 : undefined
                             }
                           >
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>
                         </div>
                       </TableCell>
