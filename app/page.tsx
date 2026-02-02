@@ -90,7 +90,7 @@ export default function CatalogPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-orange-50">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-amber-200 bg-[#ffe8bf] backdrop-blur-sm">
+      <header className="sticky top-0 z-40 border-b border-amber-200 bg-ci-primary backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between gap-4 h-16">
             <Link href="/" className="flex items-center gap-2 h-full">
@@ -221,7 +221,7 @@ export default function CatalogPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-amber-200 bg-[#ffe8bf] text-[#1a1a1a] py-8">
+      <footer className="border-t border-amber-200 bg-ci-primary text-ci-dark py-8">
         <div className="container mx-auto px-4">
           <p className="text-center text-sm">© 2026 Buddy Optical. All rights reserved.</p>
         </div>

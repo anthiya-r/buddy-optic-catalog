@@ -75,9 +75,11 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
       <div className="md:hidden mb-6">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <button className="w-full h-9 flex items-center justify-between gap-2 px-3 bg-white text-[#1a1a1a] rounded-md font-medium border border-amber-200">
+            <button className="w-full h-9 flex items-center justify-between gap-2 px-3 bg-white text-ci-dark rounded-md font-medium border border-amber-200">
               <span>ตัวกรกรองหมวดหมู่ ({selectedFilters.length})</span>
-              <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`h-5 w-5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+              />
             </button>
           </SheetTrigger>
 
@@ -89,7 +91,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
             <div className="space-y-4 p-4 bg-white">
               {/* Frame Styles */}
               <div>
-                <h4 className="font-semibold text-sm text-[#1a1a1a] mb-2">ประเภทของกรอบ</h4>
+                <h4 className="font-semibold text-sm text-ci-dark mb-2">ประเภทของกรอบ</h4>
                 <div className="space-y-2">
                   {frameCategories.frame.map((filter) => (
                     <label
@@ -100,7 +102,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
                         type="checkbox"
                         checked={selectedFilters.includes(filter.id)}
                         onChange={() => handleFilterToggle(filter.id)}
-                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
+                        className="w-4 h-4 rounded border-ci-secondary accent-ci-secondary"
                       />
                       <span className="text-sm text-slate-700">{filter.label}</span>
                     </label>
@@ -110,7 +112,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
 
               {/* Sizes */}
               <div className="border-t pt-3">
-                <h4 className="font-semibold text-sm text-[#1a1a1a] mb-2">ขนาดกรอบ</h4>
+                <h4 className="font-semibold text-sm text-ci-dark mb-2">ขนาดกรอบ</h4>
                 <div className="space-y-2">
                   {frameCategories.size.map((filter) => (
                     <label
@@ -121,7 +123,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
                         type="checkbox"
                         checked={selectedFilters.includes(filter.id)}
                         onChange={() => handleFilterToggle(filter.id)}
-                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
+                        className="w-4 h-4 rounded border-ci-secondary accent-ci-secondary"
                       />
                       <span className="text-sm text-slate-700">{filter.label}</span>
                     </label>
@@ -136,7 +138,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
                     type="checkbox"
                     checked={selectedFilters.includes('face-shape')}
                     onChange={() => handleFilterToggle('face-shape')}
-                    className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71]"
+                    className="w-4 h-4 rounded border-ci-secondary accent-ci-secondary"
                   />
                   <span className="text-sm text-slate-700">
                     {FRAME_FILTERS.find((f) => f.id === 'face-shape')?.label}
@@ -163,7 +165,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
             <div className="grid grid-cols-3 gap-6">
               {/* Column 1: Frame Styles */}
               <div>
-                <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
+                <h3 className="font-semibold text-ci-dark mb-3 text-sm uppercase tracking-wide">
                   ประเภทของกรอบ
                 </h3>
                 <div className="space-y-2">
@@ -173,9 +175,9 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
                         type="checkbox"
                         checked={selectedFilters.includes(filter.id)}
                         onChange={() => handleFilterToggle(filter.id)}
-                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
+                        className="w-4 h-4 rounded border-ci-secondary accent-ci-secondary cursor-pointer"
                       />
-                      <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
+                      <span className="text-sm text-slate-700 group-hover:text-ci-secondary transition-colors">
                         {filter.label}
                       </span>
                     </label>
@@ -185,7 +187,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
 
               {/* Column 2: Sizes */}
               <div>
-                <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
+                <h3 className="font-semibold text-ci-dark mb-3 text-sm uppercase tracking-wide">
                   ขนาดกรอบ
                 </h3>
                 <div className="space-y-2">
@@ -195,9 +197,9 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
                         type="checkbox"
                         checked={selectedFilters.includes(filter.id)}
                         onChange={() => handleFilterToggle(filter.id)}
-                        className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
+                        className="w-4 h-4 rounded border-ci-secondary accent-ci-secondary cursor-pointer"
                       />
-                      <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
+                      <span className="text-sm text-slate-700 group-hover:text-ci-secondary transition-colors">
                         {filter.label}
                       </span>
                     </label>
@@ -207,7 +209,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
 
               {/* Column 3: Recommendation & Clear */}
               <div>
-                <h3 className="font-semibold text-[#1a1a1a] mb-3 text-sm uppercase tracking-wide">
+                <h3 className="font-semibold text-ci-dark mb-3 text-sm uppercase tracking-wide">
                   คำแนะนำ
                 </h3>
                 <div className="space-y-3">
@@ -216,9 +218,9 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
                       type="checkbox"
                       checked={selectedFilters.includes('face-shape')}
                       onChange={() => handleFilterToggle('face-shape')}
-                      className="w-4 h-4 rounded border-[#cc9b71] accent-[#cc9b71] cursor-pointer"
+                      className="w-4 h-4 rounded border-ci-secondary accent-ci-secondary cursor-pointer"
                     />
-                    <span className="text-sm text-slate-700 group-hover:text-[#cc9b71] transition-colors">
+                    <span className="text-sm text-slate-700 group-hover:text-ci-secondary transition-colors">
                       เหมาะกับรูปหน้า
                     </span>
                   </label>
@@ -234,7 +236,7 @@ export default function CatalogFilters({ onFiltersChange }: CatalogFiltersProps)
                           faceShape: false,
                         });
                       }}
-                      className="mt-4 pt-3 border-t border-amber-100 text-sm text-[#cc9b71] hover:text-[#1a1a1a] font-medium transition-colors"
+                      className="mt-4 pt-3 border-t border-amber-100 text-sm text-ci-secondary hover:text-ci-dark font-medium transition-colors"
                     >
                       ล้างตัวกรอง
                     </button>
