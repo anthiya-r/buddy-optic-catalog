@@ -23,7 +23,7 @@ interface CategoryFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   category?: CategoryWithCount | null;
-  onSuccess: () => void;
+  onSuccess: (data: { category: CategoryWithCount; isEdit: boolean }) => void;
 }
 
 export function CategoryFormDialog({
@@ -71,17 +71,17 @@ export function CategoryFormDialog({
 
     let response;
     if (isEditing) {
-      response = await api.put(API_URLS.ADMIN.CATEGORIES.DETAIL(category.id), payload);
+      response = await api.put<CategoryWithCount>(API_URLS.ADMIN.CATEGORIES.DETAIL(category.id), payload);
     } else {
-      response = await api.post(API_URLS.ADMIN.CATEGORIES.LIST, payload);
+      response = await api.post<CategoryWithCount>(API_URLS.ADMIN.CATEGORIES.LIST, payload);
     }
 
     setIsLoading(false);
 
-    if (response.success) {
+    if (response.success && response.data) {
       toast.success(isEditing ? 'แก้ไขหมวดหมู่สำเร็จ' : 'เพิ่มหมวดหมู่สำเร็จ');
       onOpenChange(false);
-      onSuccess();
+      onSuccess({ category: response.data, isEdit: isEditing });
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
     }

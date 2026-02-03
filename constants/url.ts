@@ -32,4 +32,7 @@ export const API_URLS = {
       LIST: '/api/categories',
     },
   },
+  IMAGES: {
+    GET: (filename: string) => `/api/images/getImage/${filename}`,
+  },
 } as const;

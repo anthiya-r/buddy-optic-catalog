@@ -30,9 +30,10 @@ async function postHandler(request: NextRequest, context: {}, userId: string) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const imageUrl = await uploadToS3(buffer, filename, file.type);
+    await uploadToS3(buffer, filename, file.type);
 
-    return successResponse({ url: imageUrl }, 'Image uploaded successfully');
+    // Return only the filename, not the full URL
+    return successResponse({ filename }, 'Image uploaded successfully');
   } catch (error) {
     console.error('Upload error:', error);
     return handleApiError(error);

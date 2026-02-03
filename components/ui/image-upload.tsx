@@ -38,13 +38,14 @@ export function ImageUpload({
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await api.post<{ url: string }>(
+        const response = await api.post<{ filename: string }>(
           API_URLS.ADMIN.UPLOAD.IMAGE,
           formData
         );
 
-        if (response.success && response.data?.url) {
-          uploadedUrls.push(response.data.url);
+        if (response.success && response.data?.filename) {
+          // Store only the filename, the full URL will be constructed when displaying
+          uploadedUrls.push(response.data.filename);
         } else {
           toast.error(`อัปโหลด ${file.name} ไม่สำเร็จ: ${response.message}`);
         }
@@ -143,13 +144,13 @@ export function ImageUpload({
       {/* Preview Images */}
       {value.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {value.map((url, index) => (
+          {value.map((filename, index) => (
             <div
-              key={url}
+              key={filename}
               className="relative aspect-square rounded-lg overflow-hidden border group"
             >
               <Image
-                src={url}
+                src={API_URLS.IMAGES.GET(filename)}
                 alt={`Product image ${index + 1}`}
                 fill
                 className="object-cover"

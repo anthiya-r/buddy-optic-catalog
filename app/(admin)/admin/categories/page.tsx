@@ -81,7 +81,8 @@ export default function CategoriesPage() {
 
     if (response.success) {
       toast.success('ลบหมวดหมู่สำเร็จ');
-      fetchCategories();
+      // Update state directly instead of re-fetching
+      setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
     }
@@ -92,15 +93,30 @@ export default function CategoriesPage() {
   };
 
   const handleToggleStatus = async (category: CategoryWithCount) => {
-    const response = await api.put(API_URLS.ADMIN.CATEGORIES.DETAIL(category.id), {
+    const response = await api.put<CategoryWithCount>(API_URLS.ADMIN.CATEGORIES.DETAIL(category.id), {
       isActive: !category.isActive,
     });
 
-    if (response.success) {
+    if (response.success && response.data) {
       toast.success(category.isActive ? 'ซ่อนหมวดหมู่แล้ว' : 'แสดงหมวดหมู่แล้ว');
-      fetchCategories();
+      // Update state directly instead of re-fetching
+      setCategories((prev) =>
+        prev.map((c) => (c.id === category.id ? response.data! : c))
+      );
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
+    }
+  };
+
+  const handleFormSuccess = ({ category, isEdit }: { category: CategoryWithCount; isEdit: boolean }) => {
+    if (isEdit) {
+      // Update state directly for edit
+      setCategories((prev) =>
+        prev.map((c) => (c.id === category.id ? category : c))
+      );
+    } else {
+      // Re-fetch for create to get proper order
+      fetchCategories();
     }
   };
 
@@ -321,7 +337,7 @@ export default function CategoriesPage() {
         open={formDialogOpen}
         onOpenChange={setFormDialogOpen}
         category={selectedCategory}
-        onSuccess={fetchCategories}
+        onSuccess={handleFormSuccess}
       />
 
       {/* Delete Confirmation Dialog */}

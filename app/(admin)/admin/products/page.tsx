@@ -124,7 +124,12 @@ export default function ProductsPage() {
 
     if (response.success) {
       toast.success('ลบสินค้าสำเร็จ');
-      fetchProducts();
+      // Update state directly instead of re-fetching
+      setProducts((prev) => prev.filter((p) => p.id !== selectedProduct.id));
+      setPagination((prev) => ({
+        ...prev,
+        totalCount: prev.totalCount - 1,
+      }));
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
     }
@@ -135,19 +140,37 @@ export default function ProductsPage() {
   };
 
   const handleToggleStatus = async (product: Product) => {
-    const response = await api.patch(API_URLS.ADMIN.PRODUCTS.STATUS(product.id));
+    const response = await api.patch<Product>(API_URLS.ADMIN.PRODUCTS.STATUS(product.id));
 
-    if (response.success) {
+    if (response.success && response.data) {
       toast.success(product.status === 'active' ? 'ซ่อนสินค้าแล้ว' : 'แสดงสินค้าแล้ว');
-      fetchProducts();
+      // Update state directly instead of re-fetching
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? response.data! : p))
+      );
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
     }
   };
 
+  const handleFormSuccess = ({ product, isEdit }: { product: Product; isEdit: boolean }) => {
+    if (isEdit) {
+      // Update state directly for edit
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? product : p))
+      );
+    } else {
+      // Re-fetch for create to get proper pagination
+      fetchProducts();
+    }
+  };
+
   const getFirstImage = (images: string) => {
     const imageList = images.split(',').filter(Boolean);
-    return imageList[0] || '/placeholder.png';
+    if (imageList[0]) {
+      return API_URLS.IMAGES.GET(imageList[0]);
+    }
+    return '/placeholder.png';
   };
 
   return (
@@ -380,7 +403,7 @@ export default function ProductsPage() {
         onOpenChange={setFormDialogOpen}
         product={selectedProduct}
         categories={categories}
-        onSuccess={fetchProducts}
+        onSuccess={handleFormSuccess}
       />
 
       {/* Delete Confirmation Dialog */}

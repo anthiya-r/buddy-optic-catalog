@@ -1,4 +1,4 @@
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const s3Client = new S3Client({
@@ -36,12 +36,27 @@ export async function uploadToS3(file: Buffer, key: string, contentType: string)
 
   await s3Client.send(command);
 
-  // Return the public URL
-  if (process.env.AWS_ENDPOINT) {
-    // MinIO uses path-style URLs
-    return `${process.env.AWS_ENDPOINT}/${BUCKET_NAME}/${key}`;
+  // Return only the key (filename)
+  return key;
+}
+
+export async function getFromS3(key: string): Promise<{ buffer: Buffer; contentType: string }> {
+  const command = new GetObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+  });
+
+  const response = await s3Client.send(command);
+
+  if (!response.Body) {
+    throw new Error('No body in S3 response');
   }
-  return `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'ap-southeast-1'}.amazonaws.com/${key}`;
+
+  const byteArray = await response.Body.transformToByteArray();
+  const buffer = Buffer.from(byteArray);
+  const contentType = response.ContentType || 'application/octet-stream';
+
+  return { buffer, contentType };
 }
 
 export async function deleteFromS3(key: string) {

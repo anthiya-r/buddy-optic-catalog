@@ -44,9 +44,26 @@ async function putHandler(
     const category = await prisma.category.update({
       where: { id },
       data: updateData,
+      include: {
+        _count: {
+          select: {
+            products: {
+              where: {
+                deletedAt: null,
+              },
+            },
+          },
+        },
+      },
     });
 
-    return successResponse(category, 'Category updated successfully');
+    // Transform to include productCount
+    const categoryWithCount = {
+      ...category,
+      productCount: category._count.products,
+    };
+
+    return successResponse(categoryWithCount, 'Category updated successfully');
   } catch (error) {
     return handleApiError(error);
   }

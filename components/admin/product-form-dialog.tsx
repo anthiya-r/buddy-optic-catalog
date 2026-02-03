@@ -31,7 +31,7 @@ interface ProductFormDialogProps {
   onOpenChange: (open: boolean) => void;
   product?: Product | null;
   categories: Category[];
-  onSuccess: () => void;
+  onSuccess: (data: { product: Product; isEdit: boolean }) => void;
 }
 
 export function ProductFormDialog({
@@ -107,17 +107,17 @@ export function ProductFormDialog({
 
     let response;
     if (isEditing) {
-      response = await api.put(API_URLS.ADMIN.PRODUCTS.DETAIL(product.id), payload);
+      response = await api.put<Product>(API_URLS.ADMIN.PRODUCTS.DETAIL(product.id), payload);
     } else {
-      response = await api.post(API_URLS.ADMIN.PRODUCTS.LIST, payload);
+      response = await api.post<Product>(API_URLS.ADMIN.PRODUCTS.LIST, payload);
     }
 
     setIsLoading(false);
 
-    if (response.success) {
+    if (response.success && response.data) {
       toast.success(isEditing ? 'แก้ไขสินค้าสำเร็จ' : 'เพิ่มสินค้าสำเร็จ');
       onOpenChange(false);
-      onSuccess();
+      onSuccess({ product: response.data, isEdit: isEditing });
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
     }
