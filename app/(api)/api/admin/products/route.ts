@@ -1,15 +1,16 @@
 import { withAuth } from '@/lib/api-auth';
 import { errorResponse, handleApiError, successResponse } from '@/lib/api-response';
+import { Prisma } from '@/lib/generated/prisma/browser';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-async function getHandler(request: NextRequest, context: {}, userId: string) {
+async function getHandler(request: NextRequest, _context: unknown, userId: string) {
   try {
     const { searchParams } = new URL(request.url);
 
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = parseInt(searchParams.get('limit') || '8');
     const skip = (page - 1) * limit;
 
     const categoryId = searchParams.get('categoryId');
@@ -17,7 +18,7 @@ async function getHandler(request: NextRequest, context: {}, userId: string) {
     const includeDeleted = searchParams.get('includeDeleted') === 'true';
     const search = searchParams.get('search');
 
-    const where: any = {};
+    const where: Prisma.ProductWhereInput = {};
 
     if (categoryId) {
       where.categoryId = categoryId;
@@ -83,7 +84,7 @@ const createProductSchema = z.object({
   status: z.enum(['active', 'hidden']).default('active'),
 });
 
-async function postHandler(request: NextRequest, context: {}, userId: string) {
+async function postHandler(request: NextRequest, _context: unknown, userId: string) {
   try {
     const body = await request.json();
     const validatedData = createProductSchema.parse(body);

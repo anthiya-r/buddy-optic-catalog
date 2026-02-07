@@ -55,7 +55,7 @@ export default function CatalogPage() {
     try {
       const query = new URLSearchParams();
       query.append('page', page.toString());
-      query.append('limit', '20');
+      query.append('limit', '8');
 
       if (search) query.append('search', search);
       if (selectedCategory) query.append('categoryId', selectedCategory);
@@ -209,7 +209,41 @@ export default function CatalogPage() {
             )}
           </div>
 
-          {/* (optional) Pagination UI จะมาใส่ตรงนี้ได้ */}
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-10">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .slice(Math.max(0, page - 3), Math.min(totalPages, page + 2))
+                .map((p) => (
+                  <Button
+                    key={p}
+                    size="sm"
+                    variant={p === page ? 'default' : 'outline'}
+                    onClick={() => setPage(p)}
+                  >
+                    {p}
+                  </Button>
+                ))}
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
