@@ -7,39 +7,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { API_URLS } from '@/constants/url';
 import { api } from '@/lib/request';
+import { Product, ProductsResponse } from '@/types/product';
 import { Heart, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
-interface Product {
-  id: string;
-  name: string;
-  color: string;
-  images: string;
-  status: string;
-  categoryId: string;
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-}
-
-interface Category {
+export interface Category {
   id: string;
   name: string;
   slug: string;
-}
-
-interface ProductsResponse {
-  products: Product[];
-  pagination: {
-    page: number;
-    limit: number;
-    totalCount: number;
-    totalPages: number;
-  };
 }
 
 export default function CatalogPage() {
@@ -118,10 +95,6 @@ export default function CatalogPage() {
   }, [fetchProducts]);
 
   /* -------------------- helpers -------------------- */
-  // const getFirstImage = (images: string) => {
-  //   const imageList = images?.split(',').filter(Boolean);
-  //   return imageList?.[0] || '/placeholder.png';
-  // };
   const getFirstImage = (images: string) => {
     const imageList = images?.split(',').filter(Boolean);
     const firstImage = imageList?.[0];
