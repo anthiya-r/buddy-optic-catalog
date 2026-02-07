@@ -31,7 +31,6 @@ export default function CatalogPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
 
   const [page, setPage] = useState(1);
@@ -60,7 +59,6 @@ export default function CatalogPage() {
       query.append('page', page.toString());
       query.append('limit', '8');
 
-      if (search) query.append('search', search);
       if (selectedCategoryId) query.append('categoryId', selectedCategoryId);
 
       const res = await api.get<ProductsResponse>(
@@ -76,17 +74,17 @@ export default function CatalogPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, selectedCategoryId, page]);
+  }, [selectedCategoryId, page]);
 
   /* -------------------- effects -------------------- */
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  // reset page เมื่อ search / category เปลี่ยน
+  // reset page เมื่อ category เปลี่ยน
   useEffect(() => {
     setPage(1);
-  }, [search, selectedCategoryId]);
+  }, [selectedCategoryId]);
 
   // debounce
   useEffect(() => {
