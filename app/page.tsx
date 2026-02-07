@@ -4,6 +4,7 @@ import FloatingContact from '@/components/floating-contact';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -14,7 +15,7 @@ import {
 import { API_URLS } from '@/constants/url';
 import { api } from '@/lib/request';
 import { Product, ProductsResponse } from '@/types/product';
-import { Heart } from 'lucide-react';
+import { Heart, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
@@ -35,6 +36,9 @@ export default function CatalogPage() {
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   /* -------------------- fetch categories -------------------- */
   const fetchCategories = useCallback(async () => {
@@ -177,7 +181,11 @@ export default function CatalogPage() {
                       src={getFirstImage(p.images)}
                       alt={p.name}
                       fill
-                      className="object-cover group-hover:scale-110 transition"
+                      className="object-cover cursor-pointer group-hover:scale-110 transition"
+                      onClick={() => {
+                        setSelectedImage(getFirstImage(p.images));
+                        setOpen(true);
+                      }}
                     />
                     <button className="absolute top-2 right-2 p-2 bg-white/80 rounded-full opacity-0 group-hover:opacity-100">
                       <Heart className="h-4 w-4 text-orange-500" />
@@ -195,6 +203,23 @@ export default function CatalogPage() {
               ))
             )}
           </div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 bg-transparent border-none">
+              <button
+                onClick={() => setOpen(false)}
+                className="absolute top-4 right-4 z-50 rounded-full bg-white/80 p-2"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              {selectedImage && (
+                <div className="relative w-[90vw] h-[90vh]">
+                  <Image src={selectedImage} alt="Product image" fill className="object-contain" />
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-10">
