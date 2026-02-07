@@ -3,11 +3,17 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { API_URLS } from '@/constants/url';
 import { api } from '@/lib/request';
 import { Product, ProductsResponse } from '@/types/product';
-import { Heart, Search } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
@@ -109,27 +115,36 @@ export default function CatalogPage() {
       {/* Catalog */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          {/* Search */}
-          <div className="mb-6 flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search products"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+          {/* Category filter */}
+          {/* MOBILE */}
+          <div className="mb-6 block md:hidden w-full">
+            <Select
+              value={selectedCategoryId || 'all'}
+              onValueChange={(value) => setSelectedCategoryId(value === 'all' ? '' : value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="all">รวมกรอบแว่นทุกแบบ</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Category filter */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          {/* DESKTOP */}
+          <div className="mb-8 hidden flex-wrap gap-2 md:flex">
             <Button
               size="sm"
               variant={selectedCategoryId === '' ? 'default' : 'outline'}
               onClick={() => setSelectedCategoryId('')}
             >
-              ALL
+              รวมกรอบแว่นทุกแบบ
             </Button>
 
             {categories.map((cat) => (
@@ -179,7 +194,6 @@ export default function CatalogPage() {
               ))
             )}
           </div>
-
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-10">
