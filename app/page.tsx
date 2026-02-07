@@ -1,5 +1,6 @@
 'use client';
 
+import FloatingContact from '@/components/floating-contact';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -231,6 +232,7 @@ export default function CatalogPage() {
           )}
         </div>
       </section>
+      <FloatingContact />
     </div>
   );
 }
