@@ -17,16 +17,21 @@ import {
 } from '@/components/ui/table';
 import { API_URLS } from '@/constants/url';
 import { api } from '@/lib/request';
-import { CategoryWithCount } from '@/types/category';
-import { Edit, Eye, EyeOff, FolderOpen, GripVertical, Plus, Search, Trash2 } from 'lucide-react';
+import { CategoriesResponse, CategoryWithCount } from '@/types/category';
+import { ChevronLeft, ChevronRight, Edit, Eye, EyeOff, FolderOpen, GripVertical, Plus, Search, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<CategoryWithCount[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<CategoryWithCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalCount: 0,
+    totalPages: 0,
+  });
 
   // Dialogs
   const [formDialogOpen, setFormDialogOpen] = useState(false);
@@ -39,29 +44,33 @@ export default function CategoriesPage() {
 
   const fetchCategories = useCallback(async () => {
     setLoading(true);
-    const response = await api.get<CategoryWithCount[]>(API_URLS.ADMIN.CATEGORIES.LIST);
+    const params = new URLSearchParams();
+    params.set('page', pagination.page.toString());
+    params.set('limit', pagination.limit.toString());
+    if (search) params.set('search', search);
+
+    const response = await api.get<CategoriesResponse>(
+      `${API_URLS.ADMIN.CATEGORIES.LIST}?${params.toString()}`
+    );
 
     if (response.success && response.data) {
-      setCategories(response.data);
-      setFilteredCategories(response.data);
+      setCategories(response.data.categories);
+      setPagination((prev) => ({
+        ...prev,
+        totalCount: response.data!.pagination.totalCount,
+        totalPages: response.data!.pagination.totalPages,
+      }));
     }
     setLoading(false);
-  }, []);
+  }, [pagination.page, pagination.limit, search]);
 
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  useEffect(() => {
-    if (search.trim()) {
-      const filtered = categories.filter((cat) =>
-        cat.name.toLowerCase().includes(search.toLowerCase()),
-      );
-      setFilteredCategories(filtered);
-    } else {
-      setFilteredCategories(categories);
-    }
-  }, [search, categories]);
+  const handleSearch = () => {
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
 
   const handleEdit = (category: CategoryWithCount) => {
     setSelectedCategory(category);
@@ -83,6 +92,10 @@ export default function CategoriesPage() {
       toast.success('ลบหมวดหมู่สำเร็จ');
       // Update state directly instead of re-fetching
       setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
+      setPagination((prev) => ({
+        ...prev,
+        totalCount: prev.totalCount - 1,
+      }));
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
     }
@@ -115,7 +128,7 @@ export default function CategoriesPage() {
         prev.map((c) => (c.id === category.id ? category : c))
       );
     } else {
-      // Re-fetch for create to get proper order
+      // Re-fetch for create to get proper pagination
       fetchCategories();
     }
   };
@@ -143,7 +156,6 @@ export default function CategoriesPage() {
 
     // Update local state immediately
     setCategories(newCategories);
-    setFilteredCategories(newCategories);
     setDraggedItem(null);
 
     // Build reorder payload
@@ -161,6 +173,9 @@ export default function CategoriesPage() {
       fetchCategories(); // Revert on error
     }
   };
+
+  // Check if drag is allowed (not searching and on first page)
+  const isDragAllowed = !search && pagination.page === 1;
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -187,14 +202,21 @@ export default function CategoriesPage() {
           <CardTitle className="text-lg text-slate-900">ค้นหา</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="relative max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="ค้นหาหมวดหมู่..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 border-amber-200 bg-white focus:ring-orange-400"
-            />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="ค้นหาชื่อหมวดหมู่หรือ slug..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="pl-10 border-amber-200 bg-white focus:ring-orange-400"
+              />
+            </div>
+            <Button onClick={handleSearch} variant="secondary">
+              <Search className="mr-2 h-4 w-4" />
+              ค้นหา
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -238,7 +260,7 @@ export default function CategoriesPage() {
                       </TableCell>
                     </TableRow>
                   ))
-                ) : filteredCategories.length === 0 ? (
+                ) : categories.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-32 text-center">
                       <div className="flex flex-col items-center gap-2 text-slate-500">
@@ -248,17 +270,17 @@ export default function CategoriesPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredCategories.map((category) => (
+                  categories.map((category) => (
                     <TableRow
                       key={category.id}
-                      draggable={!search}
+                      draggable={isDragAllowed}
                       onDragStart={() => handleDragStart(category)}
                       onDragOver={(e) => handleDragOver(e, category)}
                       onDrop={() => handleDrop(category)}
                       className={draggedItem?.id === category.id ? 'opacity-50' : ''}
                     >
                       <TableCell>
-                        {!search && (
+                        {isDragAllowed && (
                           <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
                         )}
                       </TableCell>
@@ -322,11 +344,40 @@ export default function CategoriesPage() {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination */}
+          {!loading && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-4 border-t">
+              <p className="text-sm text-muted-foreground">
+                แสดง {(pagination.page - 1) * pagination.limit + 1} -{' '}
+                {Math.min(pagination.page * pagination.limit, pagination.totalCount)} จาก{' '}
+                {pagination.totalCount} รายการ
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
+                  disabled={pagination.page === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
+                  disabled={pagination.page === pagination.totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Hint */}
-      {!loading && filteredCategories.length > 0 && !search && (
+      {!loading && categories.length > 0 && isDragAllowed && (
         <p className="text-sm text-muted-foreground text-center">
           ลากแถวเพื่อจัดเรียงลำดับหมวดหมู่
         </p>

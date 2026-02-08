@@ -14,6 +14,7 @@ type Props<T extends FieldValues> = {
   placeholder?: string;
   label?: string;
   className?: string;
+  disabled?: boolean;
 };
 
 const PasswordField = <T extends FieldValues>({
@@ -23,6 +24,7 @@ const PasswordField = <T extends FieldValues>({
   htmlFor,
   placeholder,
   className,
+  disabled = false,
 }: Props<T>) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,6 +46,7 @@ const PasswordField = <T extends FieldValues>({
               aria-invalid={fieldState.invalid}
               placeholder={placeholder}
               className="px-10"
+              disabled={disabled}
             />
             <button
               type="button"

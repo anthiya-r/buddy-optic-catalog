@@ -31,6 +31,7 @@ import {
   Edit,
   Eye,
   EyeOff,
+  ImageOff,
   Package,
   Plus,
   Search,
@@ -62,6 +63,9 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Track failed images
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
@@ -78,6 +82,7 @@ export default function ProductsPage() {
 
     if (response.success && response.data) {
       setProducts(response.data.products);
+      setFailedImages(new Set()); // Reset failed images on refresh
       setPagination((prev) => ({
         ...prev,
         totalCount: response.data!.pagination.totalCount,
@@ -88,9 +93,12 @@ export default function ProductsPage() {
   }, [pagination.page, pagination.limit, search, categoryFilter, statusFilter]);
 
   const fetchCategories = useCallback(async () => {
-    const response = await api.get<Category[]>(API_URLS.ADMIN.CATEGORIES.LIST);
+    // Fetch all categories for the filter dropdown (high limit to get all)
+    const response = await api.get<{ categories: Category[]; pagination: unknown }>(
+      `${API_URLS.ADMIN.CATEGORIES.LIST}?limit=100`,
+    );
     if (response.success && response.data) {
-      setCategories(response.data);
+      setCategories(response.data.categories);
     }
   }, []);
 
@@ -145,9 +153,7 @@ export default function ProductsPage() {
     if (response.success && response.data) {
       toast.success(product.status === 'active' ? 'ซ่อนสินค้าแล้ว' : 'แสดงสินค้าแล้ว');
       // Update state directly instead of re-fetching
-      setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? response.data! : p))
-      );
+      setProducts((prev) => prev.map((p) => (p.id === product.id ? response.data! : p)));
     } else {
       toast.error(response.message || 'เกิดข้อผิดพลาด');
     }
@@ -156,9 +162,7 @@ export default function ProductsPage() {
   const handleFormSuccess = ({ product, isEdit }: { product: Product; isEdit: boolean }) => {
     if (isEdit) {
       // Update state directly for edit
-      setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? product : p))
-      );
+      setProducts((prev) => prev.map((p) => (p.id === product.id ? product : p)));
     } else {
       // Re-fetch for create to get proper pagination
       fetchProducts();
@@ -199,41 +203,43 @@ export default function ProductsPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="ค้นหาชื่อสินค้า..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="pl-10"
-              />
+            <div className=" col-span-1 lg:col-span-3 flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="ค้นหาชื่อสินค้า..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  className="pl-10 border-primary"
+                />
+              </div>
+
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="border-primary">
+                  <SelectValue placeholder="หมวดหมู่" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">ทุกหมวดหมู่</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="border-primary">
+                  <SelectValue placeholder="สถานะ" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">ทุกสถานะ</SelectItem>
+                  <SelectItem value="active">แสดง</SelectItem>
+                  <SelectItem value="hidden">ซ่อน</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="หมวดหมู่" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">ทุกหมวดหมู่</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="สถานะ" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">ทุกสถานะ</SelectItem>
-                <SelectItem value="active">แสดง</SelectItem>
-                <SelectItem value="hidden">ซ่อน</SelectItem>
-              </SelectContent>
-            </Select>
 
             <Button onClick={handleSearch} variant="secondary">
               <Search className="mr-2 h-4 w-4" />
@@ -295,14 +301,19 @@ export default function ProductsPage() {
                   products.map((product) => (
                     <TableRow key={product.id}>
                       <TableCell>
-                        <div className="relative h-12 w-12 rounded overflow-hidden bg-muted">
-                          <Image
-                            src={getFirstImage(product.images)}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                            sizes="48px"
-                          />
+                        <div className="relative h-12 w-12 rounded overflow-hidden bg-muted flex items-center justify-center">
+                          {failedImages.has(product.id) || !product.images ? (
+                            <ImageOff className="h-5 w-5 text-muted-foreground" />
+                          ) : (
+                            <Image
+                              src={getFirstImage(product.images)}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                              sizes="48px"
+                              onError={() => setFailedImages((prev) => new Set(prev).add(product.id))}
+                            />
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="font-medium">

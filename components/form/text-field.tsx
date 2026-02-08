@@ -13,6 +13,7 @@ type Props<T extends FieldValues> = {
   className?: string;
   icon?: ReactNode;
   iconPosition?: 'left' | 'right';
+  disabled?: boolean;
 };
 
 const TextField = <T extends FieldValues>({
@@ -24,6 +25,7 @@ const TextField = <T extends FieldValues>({
   className,
   icon,
   iconPosition = 'left',
+  disabled = false,
 }: Props<T>) => {
   return (
     <Controller
@@ -44,6 +46,7 @@ const TextField = <T extends FieldValues>({
                 id={htmlFor}
                 aria-invalid={fieldState.invalid}
                 placeholder={placeholder}
+                disabled={disabled}
                 className={cn(
                   iconPosition === 'left' && 'pl-10',
                   iconPosition === 'right' && 'pr-10',
@@ -61,6 +64,7 @@ const TextField = <T extends FieldValues>({
               id={htmlFor}
               aria-invalid={fieldState.invalid}
               placeholder={placeholder}
+              disabled={disabled}
             />
           )}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

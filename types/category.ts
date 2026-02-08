@@ -8,3 +8,13 @@ export interface CategoryWithCount {
   updatedAt: string;
   productCount: number;
 }
+
+export interface CategoriesResponse {
+  categories: CategoryWithCount[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}

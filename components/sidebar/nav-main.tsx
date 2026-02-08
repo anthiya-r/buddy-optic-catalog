@@ -51,10 +51,11 @@ export function NavMain() {
                 asChild
                 isActive={pathname.startsWith(item.url)}
                 tooltip={item.title}
+                className="peer-data-[active=true]:text-white text-black"
               >
                 <Link href={item.url}>
                   <item.icon />
-                  <span>{item.title}</span>
+                  <span className="">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

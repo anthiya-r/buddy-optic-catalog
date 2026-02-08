@@ -36,7 +36,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Glasses className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Buddy Optic</span>
+                  <span className="truncate font-semibold text-black">Buddy Optic</span>
                   <span className="text-muted-foreground truncate text-xs">Admin Panel</span>
                 </div>
               </a>
