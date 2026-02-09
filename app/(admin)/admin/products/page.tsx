@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/table';
 import { API_URLS } from '@/constants/url';
 import { api } from '@/lib/request';
+import { getFirstImage } from '@/lib/ui-helpers';
 import { Category, Product, ProductsResponse } from '@/types/product';
 import {
   ChevronLeft,
@@ -79,6 +80,7 @@ export default function ProductsPage() {
     const response = await api.get<ProductsResponse>(
       `${API_URLS.ADMIN.PRODUCTS.LIST}?${params.toString()}`,
     );
+    console.log('🚀 ~ ProductsPage ~ response:', response);
 
     if (response.success && response.data) {
       setProducts(response.data.products);
@@ -167,14 +169,6 @@ export default function ProductsPage() {
       // Re-fetch for create to get proper pagination
       fetchProducts();
     }
-  };
-
-  const getFirstImage = (images: string) => {
-    const imageList = images.split(',').filter(Boolean);
-    if (imageList[0]) {
-      return API_URLS.IMAGES.GET(imageList[0]);
-    }
-    return '/placeholder.png';
   };
 
   return (
@@ -311,7 +305,9 @@ export default function ProductsPage() {
                               fill
                               className="object-cover"
                               sizes="48px"
-                              onError={() => setFailedImages((prev) => new Set(prev).add(product.id))}
+                              onError={() =>
+                                setFailedImages((prev) => new Set(prev).add(product.id))
+                              }
                             />
                           )}
                         </div>

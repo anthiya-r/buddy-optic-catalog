@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Kanit } from 'next/font/google';
+import 'react-photo-view/dist/react-photo-view.css';
 import './globals.css';
 
 const kanit = Kanit({
@@ -10,8 +11,13 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
-  title: 'Buddy Eyewear Catalog',
-  description: 'Your trusted partner for quality optical products and services.',
+  title: {
+    default: 'Buddy Optical | แว่นตาคุณภาพ กรอบแว่นแฟชั่น',
+    template: '%s | Buddy Optical',
+  },
+  description:
+    'Buddy Optical ร้านแว่นตาคุณภาพ จำหน่ายกรอบแว่นตาแฟชั่น แว่นสายตา หลากหลายรูปแบบ คุณภาพดี ราคาเป็นกันเอง',
+  metadataBase: new URL('https://buddyoptical.com'),
 };
 
 export default function RootLayout({
@@ -20,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="th">
       <body className={`${kanit.className} antialiased`}>
         {children}
         <Toaster />
