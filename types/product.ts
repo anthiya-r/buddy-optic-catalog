@@ -11,6 +11,7 @@ export interface Product {
   name: string;
   color: string;
   images: string;
+  size: string;
   status: 'active' | 'hidden';
   categoryId: string;
   category: Category;
