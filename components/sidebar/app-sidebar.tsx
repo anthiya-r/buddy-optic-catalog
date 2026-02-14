@@ -1,7 +1,5 @@
 'use client';
 
-import { Glasses } from 'lucide-react';
-
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +11,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { authClient } from '@/lib/auth-client';
+import { Home } from 'lucide-react';
+import Link from 'next/link';
 import { NavMain } from './nav-main';
 import { NavUser } from './nav-user';
 
@@ -31,22 +31,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/admin/dashboard">
+              <Link href="/admin/dashboard">
                 <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Glasses className="size-4" />
+                  <Home className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold text-black">Buddy Optic</span>
                   <span className="text-muted-foreground truncate text-xs">Admin Panel</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
         <NavMain />
       </SidebarContent>
+
       <SidebarFooter>
         {isPending ? (
           <div className="flex items-center gap-2 p-2">
@@ -57,7 +59,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </div>
           </div>
         ) : (
-          <NavUser user={userData} />
+          <>
+            <NavUser user={userData} />
+
+            {/* New button to navigate back to home */}
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size="lg"
+                  asChild
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground border"
+                >
+                  <Link href="/" className="flex items-center gap-2">
+                    <Home className="size-4 text-black ml-2" />
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium text-black">กลับสู่หน้าหลัก</span>
+                    </div>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </>
         )}
       </SidebarFooter>
     </Sidebar>
