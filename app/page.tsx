@@ -1,5 +1,5 @@
-import CatalogSkeleton from '@/components/catalog-skeleton';
 import Catalog from '@/components/catalog';
+import CatalogSkeleton from '@/components/catalog-skeleton';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,20 +9,12 @@ export const metadata: Metadata = {
   title: 'Buddy Optical | แว่นตาคุณภาพ กรอบแว่นแฟชั่น',
   description:
     'Buddy Optical ร้านแว่นตาคุณภาพ จำหน่ายกรอบแว่นตาแฟชั่น แว่นสายตา หลากหลายรูปแบบ คุณภาพดี ราคาเป็นกันเอง',
-  keywords: [
-    'แว่นตา',
-    'กรอบแว่น',
-    'แว่นสายตา',
-    'แว่นแฟชั่น',
-    'Buddy Optical',
-    'ร้านแว่น',
-  ],
+  keywords: ['แว่นตา', 'กรอบแว่น', 'แว่นสายตา', 'แว่นแฟชั่น', 'Buddy Optical', 'ร้านแว่น'],
   openGraph: {
     title: 'Buddy Optical | แว่นตาคุณภาพ กรอบแว่นแฟชั่น',
-    description:
-      'Buddy Optical ร้านแว่นตาคุณภาพ จำหน่ายกรอบแว่นตาแฟชั่น แว่นสายตา หลากหลายรูปแบบ',
+    description: 'Buddy Optical ร้านแว่นตาคุณภาพ จำหน่ายกรอบแว่นตาแฟชั่น แว่นสายตา หลากหลายรูปแบบ',
     type: 'website',
-    images: ['/buddy-hero.jpeg'],
+    images: ['/buddy-hero.jpg'],
   },
 };
 
@@ -37,9 +29,9 @@ export default function CatalogPage() {
         </div>
       </header>
 
-      <section className="relative h-[60vh] md:h-[80vh]">
+      <section className="relative h-[40vh] sm:h-[50vh] md:h-[80vh]">
         <Image
-          src="/buddy-hero.jpeg"
+          src="/buddy-hero.jpg"
           alt="Buddy Optical - กรอบแว่นตาแฟชั่นคุณภาพ"
           fill
           priority
