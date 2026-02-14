@@ -14,12 +14,12 @@ import {
 } from '@/components/ui/select';
 import { API_URLS } from '@/constants/url';
 import { api } from '@/lib/request';
-import { Category } from '@/types/product';
-import { Product, ProductsResponse } from '@/types/product';
+import { Category, Product, ProductsResponse } from '@/types/product';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
+  console.log('Products:', products);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
@@ -48,6 +48,8 @@ export default function Catalog() {
       const res = await api.get<ProductsResponse>(
         `${API_URLS.PUBLIC.PRODUCTS.LIST}?${query.toString()}`,
       );
+
+      console.log('API Response:', res);
 
       if (res.success && res.data) {
         setProducts(res.data.products);
@@ -121,35 +123,37 @@ export default function Catalog() {
 
           {/* Products grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {loading
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <ProductCardSkeleton key={i} />
-                ))
-              : products.length === 0
-                ? (
-                    <div className="col-span-full text-center py-12 text-slate-500">
-                      No products found
+            {loading ? (
+              Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
+            ) : products.length === 0 ? (
+              <div className="col-span-full text-center py-12 text-slate-500">
+                No products found
+              </div>
+            ) : (
+              products.map((p) => (
+                <Card key={p.id} className="group overflow-hidden">
+                  <div className="relative aspect-square bg-amber-50">
+                    <ProductView
+                      photo={p.images}
+                      name={p.name}
+                      color={p.color}
+                      category={p.category.name}
+                      size={p.size}
+                    />
+                  </div>
+                  <CardContent className="p-3 space-y-1">
+                    <h3 className="text-sm font-semibold line-clamp-1">รุ่น: {p.name}</h3>
+                    <h3 className="text-sm font-semibold line-clamp-1">ขนาด: {p.size}</h3>
+                    <h3 className="text-sm font-semibold line-clamp-1">
+                      หมวดหมู่: {p.category.name}
+                    </h3>
+                    <div className="flex justify-between text-xs">
+                      <Badge variant="secondary">{p.color}</Badge>
                     </div>
-                  )
-                : products.map((p) => (
-                    <Card key={p.id} className="group overflow-hidden">
-                      <div className="relative aspect-square bg-amber-50">
-                        <ProductView
-                          photo={p.images}
-                          name={p.name}
-                          color={p.color}
-                          category={p.category.name}
-                        />
-                      </div>
-                      <CardContent className="p-3 space-y-1">
-                        <h3 className="text-sm font-semibold line-clamp-1">{p.name}</h3>
-                        <div className="flex justify-between text-xs">
-                          <Badge variant="secondary">{p.color}</Badge>
-                          <span className="text-slate-500">{p.category.name}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
 
           {/* Pagination */}

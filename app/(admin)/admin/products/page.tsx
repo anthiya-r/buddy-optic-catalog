@@ -252,6 +252,7 @@ export default function ProductsPage() {
                 <TableRow className="border-amber-100 hover:bg-amber-50">
                   <TableHead className="w-20 text-slate-700">รูปภาพ</TableHead>
                   <TableHead className="text-slate-700">ชื่อสินค้า</TableHead>
+                  <TableHead className="hidden sm:table-cell text-slate-700">ขนาด</TableHead>
                   <TableHead className="hidden sm:table-cell text-slate-700">สี</TableHead>
                   <TableHead className="hidden md:table-cell text-slate-700">หมวดหมู่</TableHead>
                   <TableHead className="text-slate-700">สถานะ</TableHead>
@@ -315,9 +316,14 @@ export default function ProductsPage() {
                       <TableCell className="font-medium">
                         <div className="max-w-50 truncate">{product.name}</div>
                         <div className="text-xs text-muted-foreground sm:hidden">
-                          {product.color} • {product.category.name}
+                          <div>{product.color}</div>
+                          <div>{product.size}</div>
+                          <div>
+                            {product.color} • {product.category.name}
+                          </div>
                         </div>
                       </TableCell>
+                      <TableCell className="hidden sm:table-cell">{product.size}</TableCell>
                       <TableCell className="hidden sm:table-cell">{product.color}</TableCell>
                       <TableCell className="hidden md:table-cell">
                         <Badge

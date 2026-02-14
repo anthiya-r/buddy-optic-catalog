@@ -8,11 +8,12 @@ import { PropsWithChildren, useEffect, useState } from 'react';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 
-type Props = {
+type ProductProps = {
   photo: string;
   name: string;
   color: string;
   category: string;
+  size: string;
 };
 
 export const Overlay = ({ children }: PropsWithChildren) => {
@@ -23,7 +24,7 @@ export const Overlay = ({ children }: PropsWithChildren) => {
   );
 };
 
-const FullScreenIcon = (props: React.HTMLAttributes<any>) => {
+const FullScreenIcon = (props: React.HTMLAttributes<SVGSVGElement>) => {
   const [fullscreen, setFullscreen] = useState<boolean>(false);
   useEffect(() => {
     document.onfullscreenchange = () => {
@@ -48,9 +49,8 @@ const FullScreenIcon = (props: React.HTMLAttributes<any>) => {
   );
 };
 
-const ProductView = ({ photo, name, color, category }: Props) => {
+const ProductView = ({ photo, name, color, category, size }: ProductProps) => {
   const imageList = photo?.split(',').filter(Boolean) ?? [];
-  console.log('🚀 ~ ProductView ~ imageList:', imageList);
   const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
 
   const firstImage = getFirstImage(photo);
@@ -112,6 +112,7 @@ const ProductView = ({ photo, name, color, category }: Props) => {
             <p className="text-xl">รุ่น: {name}</p>
             <p className="text-xl">สี: {color}</p>
             <p className="text-xl">หมวดหมู่: {category}</p>
+            <p className="text-xl">ขนาด: {size}</p>
           </div>
         </Overlay>
       )}
