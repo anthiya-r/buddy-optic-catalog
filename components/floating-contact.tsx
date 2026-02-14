@@ -22,11 +22,7 @@ export default function FloatingContact() {
 
         <DropdownMenuContent side="top" align="end" className="mb-2">
           <DropdownMenuItem asChild>
-            <a
-              href="https://line.me/ti/p/XXXXXXXX"
-              target="_blank"
-              className="flex items-center gap-2"
-            >
+            <a href="https://lin.ee/6qkhefA" target="_blank" className="flex items-center gap-2">
               <Image src="/line-icon.webp" alt="LINE" width={16} height={16} className="h-5 w-5" />
               <span>LINE</span>
             </a>
