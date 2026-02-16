@@ -39,6 +39,7 @@ const updateProductSchema = z.object({
   name: z.string().min(1, 'Product name is required').optional(),
   color: z.string().min(1, 'Color is required').optional(),
   images: z.string().optional(),
+  size: z.string().min(1, 'Size is required').optional(),
   categoryId: z.string().uuid('Invalid category ID').optional(),
   status: z.enum(['active', 'hidden']).optional(),
 });

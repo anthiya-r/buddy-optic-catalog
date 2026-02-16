@@ -81,6 +81,7 @@ const createProductSchema = z.object({
   color: z.string().min(1, 'Color is required'),
   images: z.string().min(1, 'At least one image is required'),
   categoryId: z.string().uuid('Invalid category ID'),
+  size: z.string().min(1, 'Size is required'),
   status: z.enum(['active', 'hidden']).default('active'),
 });
 
@@ -103,6 +104,7 @@ async function postHandler(request: NextRequest, _context: unknown, userId: stri
         color: validatedData.color,
         images: validatedData.images,
         categoryId: validatedData.categoryId,
+        size: validatedData.size,
         status: validatedData.status,
       },
       include: {

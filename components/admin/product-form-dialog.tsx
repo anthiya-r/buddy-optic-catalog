@@ -48,6 +48,7 @@ export function ProductFormDialog({
     name: '',
     color: '',
     images: [] as string[],
+    size: '',
     categoryId: '',
     status: 'active' as 'active' | 'hidden',
   });
@@ -58,6 +59,7 @@ export function ProductFormDialog({
         name: product.name,
         color: product.color,
         images: product.images ? product.images.split(',').filter(Boolean) : [],
+        size: product.size,
         categoryId: product.categoryId,
         status: product.status,
       });
@@ -66,6 +68,7 @@ export function ProductFormDialog({
         name: '',
         color: '',
         images: [],
+        size: '',
         categoryId: categories[0]?.id || '',
         status: 'active',
       });
@@ -102,6 +105,7 @@ export function ProductFormDialog({
       color: formData.color.trim(),
       images: formData.images.join(','),
       categoryId: formData.categoryId,
+      size: formData.size,
       status: formData.status,
     };
 
@@ -127,13 +131,9 @@ export function ProductFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>
-            {isEditing ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่'}
-          </DialogTitle>
+          <DialogTitle>{isEditing ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่'}</DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? 'แก้ไขข้อมูลสินค้าตามต้องการ'
-              : 'กรอกข้อมูลสินค้าใหม่ที่ต้องการเพิ่ม'}
+            {isEditing ? 'แก้ไขข้อมูลสินค้าตามต้องการ' : 'กรอกข้อมูลสินค้าใหม่ที่ต้องการเพิ่ม'}
           </DialogDescription>
         </DialogHeader>
 
@@ -144,9 +144,7 @@ export function ProductFormDialog({
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="กรอกชื่อสินค้า"
                 disabled={isLoading}
               />
@@ -158,9 +156,7 @@ export function ProductFormDialog({
                 <Input
                   id="color"
                   value={formData.color}
-                  onChange={(e) =>
-                    setFormData({ ...formData, color: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
                   placeholder="เช่น ดำ, น้ำตาล, ทอง"
                   disabled={isLoading}
                 />
@@ -170,12 +166,10 @@ export function ProductFormDialog({
                 <Label htmlFor="category">หมวดหมู่ *</Label>
                 <Select
                   value={formData.categoryId}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, categoryId: value })
-                  }
+                  onValueChange={(value) => setFormData({ ...formData, categoryId: value })}
                   disabled={isLoading}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="เลือกหมวดหมู่" />
                   </SelectTrigger>
                   <SelectContent>
@@ -189,23 +183,35 @@ export function ProductFormDialog({
               </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="status">สถานะ</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value: 'active' | 'hidden') =>
-                  setFormData({ ...formData, status: value })
-                }
-                disabled={isLoading}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">แสดง</SelectItem>
-                  <SelectItem value="hidden">ซ่อน</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid gap-4 grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="size">ขนาด *</Label>
+                <Input
+                  id="size"
+                  value={formData.size}
+                  onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                  placeholder="54-18-143"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="status">สถานะ</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value: 'active' | 'hidden') =>
+                    setFormData({ ...formData, status: value })
+                  }
+                  disabled={isLoading}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">แสดง</SelectItem>
+                    <SelectItem value="hidden">ซ่อน</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid gap-2">
