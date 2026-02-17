@@ -54,7 +54,7 @@ export type CategoryFormData = z.infer<typeof categoryFormSchema>;
 export const extractFormErrors = (error: unknown): Record<string, string> => {
   if (error instanceof z.ZodError) {
     const errors: Record<string, string> = {};
-    error.errors.forEach((err) => {
+    error.issues.forEach((err) => {
       const path = err.path.join('.');
       if (path) {
         errors[path] = err.message;
@@ -84,7 +84,12 @@ export const handleApiError = (error: unknown): string => {
   if (typeof error === 'string') return error;
   if (error && typeof error === 'object') {
     if ('message' in error) return String(error.message);
-    if ('error' in error && typeof error.error === 'object' && 'message' in error.error) {
+    if (
+      'error' in error &&
+      error.error !== null &&
+      typeof error.error === 'object' &&
+      'message' in error.error
+    ) {
       return String(error.error.message);
     }
   }

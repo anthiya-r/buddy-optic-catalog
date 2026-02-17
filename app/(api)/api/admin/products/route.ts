@@ -1,6 +1,6 @@
 import { withAuth } from '@/lib/api-auth';
 import { errorResponse, handleApiError, successResponse } from '@/lib/api-response';
-import { Prisma } from '@/lib/generated/prisma/browser';
+import { Prisma } from '@/lib/generated/prisma';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
