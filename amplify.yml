@@ -6,9 +6,17 @@ frontend:
         - npm ci
     build:
       commands:
+        - echo "BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET" >> .env.production
+        - echo "BETTER_AUTH_URL=$BETTER_AUTH_URL" >> .env.production
+        - echo "NEXT_PUBLIC_BETTER_AUTH_URL=$NEXT_PUBLIC_BETTER_AUTH_URL" >> .env.production
+        - echo "DATABASE_URL=$DATABASE_URL" >> .env.production
+        - echo "S3_REGION=$S3_REGION" >> .env.production
+        - echo "S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID" >> .env.production
+        - echo "S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY" >> .env.production
+        - echo "S3_BUCKET_NAME=$S3_BUCKET_NAME" >> .env.production
         - npm run build
   artifacts:
-    baseDirectory: .next/standalone
+    baseDirectory: .next
     files:
       - '**/*'
   cache:
