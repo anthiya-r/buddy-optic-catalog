@@ -5,6 +5,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params;
 
+    console.log('Received request for image with ID:', id);
+
     if (!id || id.length === 0) {
       return NextResponse.json({ error: 'Image ID is required' }, { status: 400 });
     }
@@ -14,6 +16,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     // Get image from S3 using the key
     const { buffer, contentType } = await getFromS3(key);
+
+    console.log('buffer: ', buffer);
+    console.log('contentType: ', contentType);
 
     // Return the image as binary with appropriate headers
     return new NextResponse(new Uint8Array(buffer), {

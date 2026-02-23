@@ -1,6 +1,7 @@
 import { withAuth } from '@/lib/api-auth';
 import { errorResponse, handleApiError, successResponse } from '@/lib/api-response';
 import prisma from '@/lib/prisma';
+import { deleteFromS3 } from '@/lib/s3';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
@@ -85,6 +86,19 @@ async function putHandler(
         },
       },
     });
+
+    // Delete removed images from S3
+    if (validatedData.images !== undefined) {
+      const oldImages = existingProduct.images
+        ? existingProduct.images.split(',').filter(Boolean)
+        : [];
+      const newImages = validatedData.images
+        ? validatedData.images.split(',').filter(Boolean)
+        : [];
+      const removedImages = oldImages.filter((img) => !newImages.includes(img));
+
+      await Promise.allSettled(removedImages.map((key) => deleteFromS3(key)));
+    }
 
     return successResponse(product, 'Product updated successfully');
   } catch (error) {
