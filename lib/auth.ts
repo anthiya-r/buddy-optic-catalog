@@ -3,9 +3,6 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { username } from 'better-auth/plugins';
 import prisma from './prisma';
 
-console.log('SECRET:', process.env.BETTER_AUTH_SECRET);
-console.log('DB:', process.env.DATABASE_URL);
-
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
