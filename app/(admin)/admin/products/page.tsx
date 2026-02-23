@@ -304,6 +304,7 @@ export default function ProductsPage() {
                               src={getFirstImage(product.images)}
                               alt={product.name}
                               fill
+                              unoptimized
                               className="object-cover"
                               sizes="48px"
                               onError={() =>

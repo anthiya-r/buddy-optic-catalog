@@ -138,6 +138,7 @@ const ProductView = ({ photo, name, color, category, size }: ProductProps) => {
                     src={imageUrl}
                     alt={name}
                     fill
+                    unoptimized
                     sizes="100vw"
                     className="object-cover object-center  cursor-pointer group-hover:scale-110 transition"
                     onError={() => setFailedImages((prev) => new Set(prev).add(index))}
