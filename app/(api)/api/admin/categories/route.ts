@@ -22,10 +22,7 @@ async function getHandler(request: NextRequest, context: {}, userId: string) {
     // Build where clause for search
     const where: Prisma.CategoryWhereInput = {};
     if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { slug: { contains: search, mode: 'insensitive' } },
-      ];
+      where.name = { contains: search, mode: 'insensitive' };
     }
 
     // Get total count for pagination
@@ -55,7 +52,6 @@ async function getHandler(request: NextRequest, context: {}, userId: string) {
     const categoriesWithCount = categories.map((cat) => ({
       id: cat.id,
       name: cat.name,
-      slug: cat.slug,
       sortOrder: cat.sortOrder,
       isActive: cat.isActive,
       createdAt: cat.createdAt,
@@ -85,12 +81,6 @@ async function postHandler(request: NextRequest, context: {}, userId: string) {
     const body = await request.json();
     const validatedData = createCategorySchema.parse(body);
 
-    // Generate slug from name
-    const slug = validatedData.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-
     // Get max sortOrder
     const maxSortOrder = await prisma.category.aggregate({
       _max: {
@@ -103,7 +93,6 @@ async function postHandler(request: NextRequest, context: {}, userId: string) {
     const category = await prisma.category.create({
       data: {
         name: validatedData.name,
-        slug,
         sortOrder: newSortOrder,
         isActive: validatedData.isActive,
       },

@@ -31,10 +31,6 @@ async function putHandler(
 
     if (validatedData.name !== undefined) {
       updateData.name = validatedData.name;
-      updateData.slug = validatedData.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
     }
 
     if (validatedData.isActive !== undefined) {

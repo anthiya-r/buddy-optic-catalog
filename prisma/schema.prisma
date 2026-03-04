@@ -81,7 +81,6 @@ model Verification {
 model Category {
   id        String   @id @default(uuid())
   name      String
-  slug      String   @unique
   sortOrder Int      @default(0)
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())

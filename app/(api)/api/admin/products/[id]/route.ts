@@ -20,7 +20,6 @@ async function getHandler(
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
       },
@@ -81,7 +80,6 @@ async function putHandler(
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
       },

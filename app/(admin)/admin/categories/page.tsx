@@ -206,7 +206,7 @@ export default function CategoriesPage() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="ค้นหาชื่อหมวดหมู่หรือ slug..."
+                placeholder="ค้นหาชื่อหมวดหมู่..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -230,7 +230,6 @@ export default function CategoriesPage() {
                 <TableRow className="border-amber-100 hover:bg-amber-50">
                   <TableHead className="w-12 text-slate-700"></TableHead>
                   <TableHead className="text-slate-700">ชื่อหมวดหมู่</TableHead>
-                  <TableHead className="hidden sm:table-cell text-slate-700">Slug</TableHead>
                   <TableHead className="text-center text-slate-700">จำนวนสินค้า</TableHead>
                   <TableHead className="text-slate-700">สถานะ</TableHead>
                   <TableHead className="text-right text-slate-700">จัดการ</TableHead>
@@ -246,9 +245,6 @@ export default function CategoriesPage() {
                       <TableCell>
                         <Skeleton className="h-4 w-32" />
                       </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Skeleton className="h-4 w-24" />
-                      </TableCell>
                       <TableCell>
                         <Skeleton className="h-4 w-8 mx-auto" />
                       </TableCell>
@@ -262,7 +258,7 @@ export default function CategoriesPage() {
                   ))
                 ) : categories.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-32 text-center">
+                    <TableCell colSpan={5} className="h-32 text-center">
                       <div className="flex flex-col items-center gap-2 text-slate-500">
                         <FolderOpen className="h-8 w-8" />
                         <p>ไม่พบหมวดหมู่</p>
@@ -285,9 +281,6 @@ export default function CategoriesPage() {
                         )}
                       </TableCell>
                       <TableCell className="font-medium text-slate-900">{category.name}</TableCell>
-                      <TableCell className="hidden sm:table-cell text-slate-500">
-                        {category.slug}
-                      </TableCell>
                       <TableCell className="text-center">
                         <Badge variant="secondary" className="bg-amber-100 text-orange-900">
                           {category.productCount}

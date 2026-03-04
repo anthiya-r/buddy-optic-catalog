@@ -53,7 +53,6 @@ async function getHandler(request: NextRequest, _context: unknown, userId: strin
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
       },
@@ -112,7 +111,6 @@ async function postHandler(request: NextRequest, _context: unknown, userId: stri
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
       },

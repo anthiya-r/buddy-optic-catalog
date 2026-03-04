@@ -38,10 +38,6 @@ export type ProductFormData = z.infer<typeof productFormSchema>;
  */
 export const categoryFormSchema = z.object({
   name: z.string().min(1, 'Category name is required').max(255, 'Category name too long'),
-  slug: z
-    .string()
-    .min(1, 'Slug is required')
-    .regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens'),
   isActive: z.boolean().default(true),
 });
 

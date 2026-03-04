@@ -35,7 +35,6 @@ async function patchHandler(
           select: {
             id: true,
             name: true,
-            slug: true,
           },
         },
       },
