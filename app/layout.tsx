@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   description:
     'ร้านตัดแว่นสายตาทุกชนิด สั้น ยาว เอียง มีเลนส์หลายประเภท  เริ่มต้นเพียง 590 บาท สั่งตัดได้ทั้งออนไลน์และหน้าร้าน พร้อมบริการวัดสายตาฟรี',
-  metadataBase: new URL('https://buddyoptical.com'),
+  metadataBase: new URL('https://www.buddy-optical.com/'),
 };
 
 export default function RootLayout({
