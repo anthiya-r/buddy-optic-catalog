@@ -12,11 +12,11 @@ const kanit = Kanit({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Buddy Optical | แว่นตาคุณภาพ กรอบแว่นแฟชั่น',
+    default: 'ร้าน Buddy Optical แว่นตา แว่นกรองแสง สายตา ราคาถูก',
     template: '%s | Buddy Optical',
   },
   description:
-    'Buddy Optical ร้านแว่นตาคุณภาพ จำหน่ายกรอบแว่นตาแฟชั่น แว่นสายตา หลากหลายรูปแบบ คุณภาพดี ราคาเป็นกันเอง',
+    'ร้านตัดแว่นสายตาทุกชนิด สั้น ยาว เอียง มีเลนส์หลายประเภท  เริ่มต้นเพียง 590 บาท สั่งตัดได้ทั้งออนไลน์และหน้าร้าน พร้อมบริการวัดสายตาฟรี',
   metadataBase: new URL('https://buddyoptical.com'),
 };
 
